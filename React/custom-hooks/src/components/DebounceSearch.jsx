@@ -5,10 +5,10 @@ function DebounceSearch() {
     function data() {
         console.log('Jeet')
     }
-    const debounceFn = useDebounce()
+    const debounceFn = useDebounce(data)    
     return (
         <div>
-            <h1>hi</h1>
+            <input type="text" onChange={debounceFn} />
         </div>
     )
 }

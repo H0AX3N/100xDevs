@@ -1,6 +1,7 @@
 import './App.css'
 import Counter from './components/Counter'
 import Counter2 from './components/Counter2'
+import DebounceSearch from './components/debounceSearch'
 import FetchedData from './components/FetchedData'
 import PrevValue from './components/PrevValue'
 import ReFetch from './components/ReFetch'
@@ -12,7 +13,8 @@ function App() {
       {/* <ReFetch /> */}
       {/* <Counter />
       <Counter2 /> */}
-      <PrevValue />
+      {/* <PrevValue /> */}
+      <DebounceSearch />
     </>
   )
 }

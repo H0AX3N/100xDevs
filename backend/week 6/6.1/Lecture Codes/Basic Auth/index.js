@@ -55,6 +55,21 @@ app.post('/sign-in', (req, res) => {
     console.log(users)
 });
 
+app.get('/me', (req, res) => {
+    const token = req.headers.authorization;
+    const user = users.find(user => user.token === token);
+    if(user) {
+        res.send({
+            username: user.username,
+            password: user.password
+        })
+    } else {
+        res.json({
+            message: "Invalid token"
+        })
+    }
+})
+
 app.listen(3000, () => {
     console.log('http://localhost:3000')
 })

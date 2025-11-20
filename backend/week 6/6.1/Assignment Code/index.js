@@ -1,35 +1,32 @@
 const express = require('express');
 const app = express();
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = "fyt67hjiopijhuwfvu"; // This should preferably be in the dotenv file
-
-app.use(express.json());
+const JWT_SECRET = "fyt67hjiopijhuwfvu";
 
 const users = [];
+
+app.use(express.json());
 
 app.post('/sign-up', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-    
     users.push({
         username: username,
         password: password
     })
-    console.log(users)
 
     res.json({
         message: "You have signed up successfully"
     })
 });
 
-
 app.post('/sign-in', (req, res) => {
     const username = req.body.username;
-    const password = req.body.password; 
+    const password = req.body.password;
 
     const foundUser = users.find(user => user.username === username && user.password === password);
 
-    if(foundUser) {
+    if (foundUser) {
         const token = jwt.sign({
             username: foundUser.username
         }, JWT_SECRET);
@@ -43,23 +40,22 @@ app.post('/sign-in', (req, res) => {
             message: "Invalid username or password"
         })
     }
-    console.log(users)
 });
 
 app.get('/me', (req, res) => {
-    const token = req.headers.authorization;
+    const token = req.headers.token;
     if (!token) {
-        // Send a response to the client that the token is missing
         return res.json({
-            message: "Token is missing!",
-        });
+            message: "Token is missing!"
+        })
     }
 
     const userDetails = jwt.verify(token, JWT_SECRET);
 
     const user = users.find(user => user.username === userDetails.username);
-    if(user) {
-        res.send({
+
+    if (user) {
+        res.json({
             username: user.username,
             password: user.password
         })

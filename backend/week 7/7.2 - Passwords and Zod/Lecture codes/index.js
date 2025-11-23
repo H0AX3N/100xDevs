@@ -4,6 +4,7 @@ const app = express();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { mongoose } = require('mongoose');
+const { z } = require('zod');
 
 const SECRET_KEY = 'vhyf72gt4v4bu3r8hf7gyu';
 
@@ -11,6 +12,18 @@ mongoose.connect("mongodb+srv://Sandipan:PnZbjl0v21SOrhxO@cluster0.rno05ea.mongo
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
+    const requiredBody = z.object({
+        email: z.email(),
+        password: z.string().min(6).max(50),
+        username: z.string().min(6).max(50)
+    })
+    const parsedDataWithSuccess = requiredBody.safeParse(req.body);
+    if (!parsedDataWithSuccess.success) {
+        return res.status(400).json({
+            message: "Invalid request body",
+            error: parsedDataWithSuccess.error
+        })
+    }
     const email = req.body.email;
     const password = req.body.password;
     const username = req.body.username;
@@ -32,11 +45,23 @@ app.post("/signin", async (req, res) => {
     const password = req.body.password;
 
     const user = await UserModel.findOne({
-        email: email,
-        password: password
+        email: email
     })
 
-    if (user) {
+    if (!user) {
+        return res.status(403).json({
+            message: "User not found"
+        })
+    }
+    console.log("Req body:", req.body);
+    console.log("email:", req.body.email);
+    console.log("password:", req.body.password);
+    console.log("DB password:", user.password);
+
+
+    const isPasswordMatched = await bcrypt.compare(password, user.password);
+
+    if (isPasswordMatched) {
         const token = jwt.sign({
             id: user._id.toString()
         }, SECRET_KEY);

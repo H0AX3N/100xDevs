@@ -1,11 +1,25 @@
 const express = require("express");
 const { userRouter } = require("./routes/user");
 const { courseRouter } = require("./routes/course");
+const { adminRouter } = require("./routes/admin");
 const app = express();
+const mongoose = require("mongoose");
 
-app.use('/user', userRouter);
-app.use('/course', courseRouter);
+app.use('/api/v1/user', userRouter);
+app.use('/api/v1/admin', adminRouter);
+app.use('/api/v1/course', courseRouter);
 
-app.listen(3000, () => {
-    console.log("http://localhost:3000");
-});
+async function main() {
+    try {
+        await mongoose.connect("mongodb+srv://Sandipan:PnZbjl0v21SOrhxO@cluster0.rno05ea.mongodb.net/course-app");
+        console.log("DB connected ✨");
+
+        app.listen(3000, () => {
+            console.log("http://localhost:3000");
+        });
+    } catch (err) {
+        console.error("DB connection failed ❌", err);
+    }
+}
+
+main();

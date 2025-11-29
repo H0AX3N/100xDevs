@@ -1,4 +1,5 @@
 const express = require("express");
+const dotenv = require('dotenv').config()
 const { userRouter } = require("./routes/user");
 const { courseRouter } = require("./routes/course");
 const { adminRouter } = require("./routes/admin");
@@ -11,7 +12,7 @@ app.use('/api/v1/course', courseRouter);
 
 async function main() {
     try {
-        await mongoose.connect("mongodb+srv://Sandipan:PnZbjl0v21SOrhxO@cluster0.rno05ea.mongodb.net/course-app");
+        await mongoose.connect(process.env.MONGODB_URI);
         console.log("DB connected ✨");
 
         app.listen(3000, () => {

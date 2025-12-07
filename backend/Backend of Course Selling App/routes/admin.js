@@ -4,11 +4,13 @@ const { AdminModel } = require('../db');
 const { z } = require('zod');
 
 adminRouter.post('/signup', (req, res) => {
-    const { username, email, password } = req.body;
+    const username = req.body.username;
+    const email = req.body.email;
+    const password = req.body.password;
     const adminSchema = z.object({
-        username: z.string().min(3),
+        username: z.string().min(3).max(30),
         email: z.email(),
-        password: z.string().min(6)
+        password: z.string().min(8).max(30)
     })
     res.json({
         message: "signup"

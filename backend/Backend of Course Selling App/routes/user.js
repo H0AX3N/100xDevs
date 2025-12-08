@@ -4,17 +4,50 @@ const { Router } = express;
 const { UserModel } = require("../db");
 const userRouter = Router();
 const { z } = require("zod");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 userRouter.post('/signin', async (req, res) => {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({
+            message: "Email and password required"
+        });
+    }
     try {
         const user = await UserModel.findOne({
-            email,
-            password
-        })
-    } catch (error) {
+            email
+        });
+        if (!user) {
+            return res.status(401).json({
+                message: "Invalid email or password"
+            })
+        }
+        const passwordMatched = await bcrypt.compare(password, user.password);
 
+        if (passwordMatched) {
+            const token = jwt.sign({
+                id: user._id
+            }, process.env.JWT_SECRET);
+
+            // Do cookie logic if using cookie based authentication
+            console.log("Sending response");
+            res.json({
+                message: "Signin Success",
+                token
+            })
+        } else {
+            return res.status(401).json({
+                message: "Invalid email or password"
+            })
+        }
+    } catch (error) {
+        console.error("Error in signin:", error);
+        res.status(403).json({
+            message: "SignIn Failed",
+            error: error.message
+        })
     }
 })
 

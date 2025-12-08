@@ -16,8 +16,8 @@ async function main() {
         await mongoose.connect(process.env.MONGODB_URI);
         console.log("DB connected ✨");
 
-        app.listen(3000, () => {
-            console.log("http://localhost:3000");
+        app.listen(3005, () => {
+            console.log("http://localhost:3005");
         });
     } catch (err) {
         console.error("DB connection failed ❌", err);

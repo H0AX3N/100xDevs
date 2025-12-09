@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const adminRouter = Router();
-const { AdminModel } = require('../db');
+const { AdminModel, CourseModel } = require('../db');
 const { z } = require('zod');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -114,22 +114,51 @@ adminRouter.post('/course', adminMiddleware, async (req, res) => {
             error: error.message
         });
     }
-
-    res.json({
-        message: "course"
-    });
 })
 
 adminRouter.get('/course/bulk', adminMiddleware, (req, res) => {
-    res.json({
-        message: "bulk course"
-    });
+    const adminId = req.id;
+    try {
+        const courses = CourseModel.find({
+            creatorId: adminId
+        })
+        res.json({
+            message: "Courses fetched successfully",
+            courses
+        })
+    } catch (error) {
+        console.error("Error in course fetching:", error);
+        res.status(500).json({
+            message: "Course fetching failed",
+            error: error.message
+        });
+    }
 })
 
-adminRouter.put('/course', adminMiddleware, (req, res) => {
-    res.json({
-        message: "Edit Courses"
-    });
+adminRouter.put('/course', adminMiddleware, async (req, res) => {
+    const adminId = req.id;
+
+    const { title, description, price, imageUrl } = req.body;
+    try {
+        const course = await CourseModel.updateOne({
+            creatorId: adminId
+        }, {
+            title,
+            description,
+            price,
+            imageUrl
+        })
+        res.json({
+            message: "Course updated successfully",
+            courseId: course._id
+        })
+    } catch (error) {
+        console.error("Error in course update:", error);
+        res.status(500).json({
+            message: "Course update failed",
+            error: error.message
+        });
+    }
 })
 
 module.exports = {

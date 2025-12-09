@@ -4,6 +4,7 @@ const { AdminModel } = require('../db');
 const { z } = require('zod');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { adminMiddleware } = require('../middlewares/admin');
 
 adminRouter.post('/signup', async (req, res) => {
     const adminSchema = z.object({
@@ -89,19 +90,43 @@ adminRouter.post('/signin', async (req, res) => {
     }
 })
 
-adminRouter.post('/course', (req, res) => {
+adminRouter.post('/course', adminMiddleware, async (req, res) => {
+    const adminId = req.id;
+
+    const { title, description, price, imageUrl } = req.body;
+
+    try {
+        const course = await CourseModel.create({
+            title,
+            description,
+            price,
+            imageUrl,
+            creatorId: adminId
+        });
+        res.json({
+            message: "Course created successfully",
+            course: course._id
+        })
+    } catch (error) {
+        console.error("Error in course creation:", error);
+        res.status(500).json({
+            message: "Course creation failed",
+            error: error.message
+        });
+    }
+
     res.json({
         message: "course"
     });
 })
 
-adminRouter.get('/course/bulk', (req, res) => {
+adminRouter.get('/course/bulk', adminMiddleware, (req, res) => {
     res.json({
         message: "bulk course"
     });
 })
 
-adminRouter.put('/course', (req, res) => {
+adminRouter.put('/course', adminMiddleware, (req, res) => {
     res.json({
         message: "Edit Courses"
     });

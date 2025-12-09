@@ -6,7 +6,7 @@ const userSchema = new Schema({
     username: String,
     email: { type: String, unique: true },
     password: String,
-    role: String,
+    role: String
 });
 
 const courseSchema = new Schema({
@@ -21,6 +21,7 @@ const adminSchema = new Schema({
     username: String,
     email: { type: String, unique: true },
     password: String,
+    role: String
 });
 
 const purchaseSchema = new Schema({

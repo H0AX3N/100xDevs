@@ -29,7 +29,7 @@ userRouter.post('/signin', async (req, res) => {
         if (passwordMatched) {
             const token = jwt.sign({
                 id: user._id
-            }, process.env.JWT_SECRET);
+            }, process.env.JWT_USER_SECRET);
 
             // Do cookie logic if using cookie based authentication
             console.log("Sending response");

@@ -1,11 +1,12 @@
 // User routes
 const express = require("express");
 const { Router } = express;
-const { UserModel } = require("../db");
+const { UserModel, PurchaseModel } = require("../db");
 const userRouter = Router();
 const { z } = require("zod");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { userMiddleware } = require("../middlewares/user");
 
 userRouter.post('/signin', async (req, res) => {
     const { email, password } = req.body;
@@ -55,7 +56,7 @@ userRouter.post('/signup', async (req, res) => {
     const userSchema = z.object({
         username: z.string().min(3).max(30),
         email: z.email(),
-        password: z.string().min(8).max(30),
+        password: z.string().max(30),
         role: z.enum(["user", "admin"])
     })
 
@@ -91,10 +92,23 @@ userRouter.post('/signup', async (req, res) => {
     }
 })
 
-userRouter.get('/purchases', (req, res) => {
-    res.json({
-        message: "courses"
-    });
+userRouter.get('/purchases', userMiddleware, async (req, res) => {
+    const userId = req.id;
+    try {
+        const purchases = await PurchaseModel.find({
+            userId
+        })
+        res.json({
+            message: "Purchases Fetched Successfully",
+            purchases
+        })
+    } catch (error) {
+        console.error("Error in purchase fetching:", error);
+        res.status(500).json({
+            message: "Purchase fetching failed",
+            error: error.message
+        })
+    }
 })
 
 module.exports = {

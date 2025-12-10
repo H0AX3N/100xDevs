@@ -23,7 +23,7 @@ app.post("/signup", async (req, res) => {
             message: "Invalid request body",
             error: parsedDataWithSuccess.error
         })
-    }
+    }  
     const email = req.body.email;
     const password = req.body.password;
     const username = req.body.username;
